@@ -4,15 +4,16 @@ import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { content } from "@/lib/content";
 import { useSession } from "next-auth/react";
-import { postCapture } from "@/lib/api";
+import { postCapture, type CaptureResponse } from "@/lib/api";
 
 interface ContactFrameCaptureProps {
   videoRef: React.RefObject<HTMLVideoElement | null>;
   isPaused: boolean;
-  onCapture: (data: any) => void;
+  onCapture: (data: CaptureResponse) => void;
+  landmarksRef: React.MutableRefObject<number[][]>;
 }
 
-export function ContactFrameCapture({ videoRef, isPaused, onCapture }: ContactFrameCaptureProps) {
+export function ContactFrameCapture({ videoRef, isPaused, onCapture, landmarksRef }: ContactFrameCaptureProps) {
   const { data: session } = useSession();
   const [kickingFoot, setKickingFoot] = useState<"right" | "left">("right");
   const [captured, setCaptured] = useState(false);
@@ -39,11 +40,15 @@ export function ContactFrameCapture({ videoRef, isPaused, onCapture }: ContactFr
       ctx?.drawImage(video, 0, 0);
       const thumbnail = canvas.toDataURL("image/jpeg", 0.3);
 
+      const currentLandmarks = landmarksRef.current.length === 33
+        ? landmarksRef.current
+        : Array.from({ length: 33 }, () => [0.5, 0.5, 0]);
+
       const windowFrames = [];
       for (let i = -framesBefore; i <= framesAfter; i++) {
         windowFrames.push({
           t_offset_ms: Math.round((i / fps) * 1000),
-          landmarks: Array.from({ length: 33 }, () => [0.5, 0.5]),
+          landmarks: currentLandmarks,
         });
       }
 

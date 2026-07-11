@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { CoachingOutput, DiagnosticsPayload, getMetrics } from "../lib/api";
+import { useState, useEffect, useCallback } from "react";
+import { getMetrics, type SubScores, type RawMeasurements, type CoachingOutput, type DiagnosticsPayload } from "../lib/api";
 
 export interface DashboardData {
   techniqueScore: number;
@@ -23,66 +23,109 @@ export interface DashboardData {
     recovery_com_displacement_norm: number;
   } | null;
   coaching: CoachingOutput | null;
+  sessionId: string | null;
 }
 
-const MOCK_DATA: DashboardData = {
-  techniqueScore: 78,
-  trackingConfidence: 0.94,
-  subScores: {
-    plant_leg_stability: 82,
-    hip_rotation: 71,
-    strike_leg_extension: 88,
-    follow_through: 69,
-    recovery_balance: 74,
-  },
-  rawMeasurements: {
-    swing_foot_peak_speed_norm_per_s: 3.42,
-    hip_rotation_peak_deg: 34.2,
-    plant_foot_lateral_drift_norm: 0.014,
-    strike_leg_knee_extension_deg: 118.7,
-    follow_through_range_deg: 46.5,
-    torso_lean_at_contact_deg: 9.1,
-    recovery_com_displacement_norm: 0.031,
-  },
-  coaching: {
-    summary: "Strong hip rotation but the plant leg loses stability just after contact.",
-    strengths: ["Excellent hip rotation generates strong power transfer."],
-    tips: ["Add slightly more plant-knee flexion to improve post-contact stability."],
-    drill: "Slow-motion plant-and-freeze drill: kick and hold your finishing position for 3 seconds, 10 reps.",
-  },
-};
 
-const MOCK_DIAGNOSTICS: DiagnosticsPayload = {
-  internet_connection: "offline",
-  local_pose_engine: "ready",
-  local_bitnet_engine: "ready",
-  bitnet_endpoint: "127.0.0.1:8080",
-  external_request_count: 0,
-  cpu_percent: 42.3,
-  ram_used_mb: 1820,
-  inference_latency_ms: 2350,
-};
+
+interface StoredCapture {
+  techniqueScore: number;
+  subScores: SubScores;
+  rawMeasurements: RawMeasurements;
+  coaching: CoachingOutput | null;
+  trackingConfidence: number;
+}
+
+const STORAGE_KEY = "penaltyiq-last-capture";
 
 export function useDashboardData() {
-  const [data] = useState<DashboardData>(MOCK_DATA);
-  const [diagnostics, setDiagnostics] = useState<DiagnosticsPayload>(MOCK_DIAGNOSTICS);
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [diagnostics, setDiagnostics] = useState<DiagnosticsPayload | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadFromStorage = useCallback((): DashboardData | null => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return null;
+      const parsed: StoredCapture = JSON.parse(stored);
+      return {
+        techniqueScore: parsed.techniqueScore,
+        trackingConfidence: parsed.trackingConfidence ?? 0.94,
+        subScores: parsed.subScores ?? null,
+        rawMeasurements: parsed.rawMeasurements ?? null,
+        coaching: parsed.coaching ?? null,
+        sessionId: null,
+      };
+    } catch {
+      return null;
+    }
+  }, []);
+
+  // Fetch the latest session from the API
+  const fetchFromApi = useCallback(async (): Promise<DashboardData | null> => {
+    try {
+      const res = await fetch("/api/sessions");
+      if (!res.ok) return null;
+      const sessions = await res.json();
+      if (!sessions || sessions.length === 0) return null;
+
+      const latest = sessions[0];
+      return {
+        techniqueScore: latest.techniqueScore ?? 0,
+        trackingConfidence: 0.94,
+        subScores: latest.subScoresJson ? JSON.parse(latest.subScoresJson) : null,
+        rawMeasurements: latest.rawMeasurementsJson ? JSON.parse(latest.rawMeasurementsJson) : null,
+        coaching: latest.coachingJson ? JSON.parse(latest.coachingJson) : null,
+        sessionId: latest.id,
+      };
+    } catch {
+      return null;
+    }
+  }, []);
 
   useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+
+      // Try API first, fall back to localStorage
+      let result = await fetchFromApi();
+      if (!result) {
+        result = loadFromStorage();
+      }
+
+      if (!cancelled) {
+        if (result) {
+          setData(result);
+        } else {
+          setError("No sessions yet — upload a video to get started.");
+        }
+        setLoading(false);
+      }
+    }
+
+    load();
+
+    // Poll diagnostics every 5s
     const interval = setInterval(async () => {
       try {
         const metrics = await getMetrics();
-        setDiagnostics(metrics);
+        if (!cancelled) setDiagnostics(metrics);
       } catch {
-        // Use mock data if backend unreachable
-        setDiagnostics((prev) => ({
-          ...prev,
-          local_bitnet_engine: "down" as const,
-        }));
+        if (!cancelled) {
+          setDiagnostics((prev) => prev ? { ...prev, local_bitnet_engine: "down" as const } : null);
+        }
       }
     }, 5000);
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [fetchFromApi, loadFromStorage]);
 
-  return { data, diagnostics };
+  return { data, diagnostics, loading, error };
 }

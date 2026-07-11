@@ -1,8 +1,20 @@
 import psutil
+import socket
 import time
+from urllib.request import urlopen, Request
+from urllib.error import URLError
 
 from backend.bitnet_client import get_external_request_count, health_check
 from backend.config import BITNET_ENDPOINT
+
+
+def _check_internet() -> str:
+    """Check if internet is reachable by connecting to Google DNS."""
+    try:
+        socket.create_connection(("8.8.8.8", 53), timeout=2)
+        return "online"
+    except (OSError, socket.timeout):
+        return "offline"
 
 
 class MetricsCollector:
@@ -14,13 +26,14 @@ class MetricsCollector:
         cpu = psutil.cpu_percent(interval=0.1)
         ram = psutil.virtual_memory().used / (1024 * 1024)
         bitnet_ready = health_check()
+        internet = _check_internet()
         now = time.time()
 
         if now - self._last_check > 5:
             self._last_check = now
 
         return {
-            "internet_connection": "online",
+            "internet_connection": internet,
             "local_pose_engine": "ready",
             "local_bitnet_engine": "ready" if bitnet_ready else "down",
             "bitnet_endpoint": BITNET_ENDPOINT,

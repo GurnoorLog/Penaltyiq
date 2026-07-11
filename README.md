@@ -54,7 +54,7 @@ python -m backend.bridge
 
 **Backend (`backend/.env`):**
 - `BITNET_ENDPOINT` — Local LLM endpoint (default: `http://127.0.0.1:8080`)
-- `GEMINI_API_KEY` — Google Gemini API key (optional, for chat)
+- `GEMINI_API_KEY` — Google Gemini API key (required for uploaded-video verification and optional Gemini coaching refinement)
 
 ### Google OAuth Setup
 

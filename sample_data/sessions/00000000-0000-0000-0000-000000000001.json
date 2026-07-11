@@ -1,0 +1,36 @@
+{
+  "session_id": "00000000-0000-0000-0000-000000000001",
+  "technique_score": 12,
+  "sub_scores": {
+    "plant_leg_stability": 1.0,
+    "hip_rotation": 12.0,
+    "strike_leg_extension": 14.0,
+    "follow_through": 14.0,
+    "recovery_balance": 22.0
+  },
+  "raw_measurements": {
+    "swing_foot_peak_speed_norm_per_s": 0.025,
+    "hip_rotation_peak_deg": 7.6,
+    "plant_foot_lateral_drift_norm": 0.07,
+    "strike_leg_knee_extension_deg": 180.0,
+    "follow_through_range_deg": 0.6,
+    "torso_lean_at_contact_deg": 180.0,
+    "recovery_com_displacement_norm": 0.025
+  },
+  "tracking_confidence": 0.94,
+  "coaching": {
+    "summary": "Plant leg is stable (lateral drift: 0.000).",
+    "strengths": [
+      "Plant leg is stable (lateral drift: 0.000).",
+      "Torso remains upright (0.0\u00b0 lean) \u2014 good posture at contact.",
+      "Clean recovery \u2014 balance maintained post-kick."
+    ],
+    "tips": [
+      "Hip rotation is 0.0\u00b0 \u2014 work on driving the hip through the kick.",
+      "Strike-leg extension is 0.0\u00b0 \u2014 extend fully through the ball.",
+      "Increase follow-through range (currently 0.0\u00b0) for better control."
+    ],
+    "drill": "Plant-and-freeze drill: 5 slow-motion kicks, hold finish position for 3 seconds each. Focus on keeping the plant knee flexed through contact."
+  },
+  "coaching_error": null
+}

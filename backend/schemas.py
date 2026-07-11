@@ -55,6 +55,17 @@ class CoachingOutput(BaseModel):
     drill: str
 
 
+class VideoRelevanceRequest(BaseModel):
+    frames: List[str] = Field(min_length=1, max_length=3)
+
+
+class VideoRelevanceResponse(BaseModel):
+    accepted: bool
+    confidence: float = Field(ge=0, le=1)
+    detected_activity: str
+    reason: str
+
+
 class CaptureResponse(BaseModel):
     session_id: str
     technique_score: int
@@ -63,6 +74,7 @@ class CaptureResponse(BaseModel):
     tracking_confidence: float
     coaching: Optional[CoachingOutput] = None
     coaching_error: Optional[str] = None
+    coaching_engine: str = "local"
 
 
 class DiagnosticsPayload(BaseModel):

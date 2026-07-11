@@ -1,14 +1,14 @@
 "use client";
 
-import { VideoUploader } from "@/components/capture/VideoUploader";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function StartPage() {
-  return (
-    <div className="pt-20 min-h-screen bg-grid px-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8">Capture Session</h1>
-        <VideoUploader />
-      </div>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace("/dashboard/messi");
+  }, [router]);
+
+  return null;
 }

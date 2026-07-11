@@ -1,11 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { signIn } from "next-auth/react";
 
 export function Hero() {
-  const router = useRouter();
-
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       const { clientX, clientY } = e;
@@ -40,7 +38,7 @@ export function Hero() {
     };
   }, []);
 
-  const goToDashboard = () => router.push("/dashboard");
+  const startGoogleSignIn = () => signIn("google", { callbackUrl: "/onboarding" });
 
   return (
     <>
@@ -64,13 +62,13 @@ export function Hero() {
           </nav>
           <div className="flex items-center space-x-6">
             <button
-              onClick={() => router.push("/demo")}
+              onClick={startGoogleSignIn}
               className="text-on-surface hover:text-gold transition-colors duration-200 px-4 py-2 text-sm font-['Geist_Mono'] font-medium"
             >
               Login
             </button>
             <button
-              onClick={goToDashboard}
+              onClick={startGoogleSignIn}
               className="bg-gold text-on-primary-fixed font-bold px-8 py-3 rounded-xl text-sm font-['Geist_Mono'] font-medium hover:shadow-2xl hover:shadow-gold/30 active:scale-95 transition-all"
             >
               Sign Up
@@ -99,7 +97,7 @@ export function Hero() {
 
             <div className="flex flex-col items-center gap-8 mb-24">
               <button
-                onClick={goToDashboard}
+                onClick={startGoogleSignIn}
                 className="glass-morphism bg-white/10 hover:bg-white/20 text-on-surface font-bold px-12 py-6 rounded-2xl flex items-center gap-4 transition-all duration-300 hover:translate-y-[-2px] border border-gold/30"
               >
                 <img
@@ -202,7 +200,7 @@ export function Hero() {
             <h2 className="font-['Sora'] font-extrabold text-on-surface mb-10 tracking-tight neon-glow" style={{ fontSize: "clamp(2rem, 4vw, 4rem)", lineHeight: "1.1", letterSpacing: "-0.02em" }}>Ready to dominate the spot?</h2>
             <p className="text-white text-lg mb-16 mx-auto font-medium leading-relaxed drop-shadow-md" style={{ maxWidth: "36rem" }}>Join 15,000+ athletes who have improved their conversion rate by an average of 22% in just 30 days of deliberate practice.</p>
             <button
-              onClick={goToDashboard}
+              onClick={startGoogleSignIn}
               className="bg-gold text-on-primary-fixed font-extrabold px-16 py-7 rounded-2xl font-['Sora'] font-semibold scale-95 hover:scale-100 active:scale-95 transition-all duration-500 shadow-2xl" style={{ fontSize: "clamp(1.125rem, 2vw, 1.5rem)", boxShadow: "0 0 50px rgba(255,215,0,0.4)" }}
             >
               Get Started Free

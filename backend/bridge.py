@@ -16,10 +16,17 @@ from backend.schemas import (
     ChatResponse,
     SubScores,
     RawMeasurements,
+    VideoRelevanceRequest,
+    VideoRelevanceResponse,
 )
 from backend.scoring import compute_all
 from backend.bitnet_client import generate_coaching
-from backend.gemini_chat import chat as gemini_chat, is_available as gemini_available
+from backend.gemini_chat import (
+    assess_penalty_video,
+    chat as gemini_chat,
+    is_available as gemini_available,
+    refine_coaching,
+)
 from backend.metrics import MetricsCollector
 
 app = FastAPI(title="PenaltyIQ Backend", version="2.0.0")
@@ -52,8 +59,13 @@ async def capture(input_data: MovementWindowInput):
 
     coaching_result = None
     coaching_error = None
+    coaching_engine = "local"
     try:
         coaching_raw = generate_coaching(scoring_result["raw_measurements"])
+        refined_coaching = refine_coaching(coaching_raw, scoring_result["raw_measurements"]) if coaching_raw else None
+        if refined_coaching:
+            coaching_raw = refined_coaching
+            coaching_engine = "bitnet+gemini"
         if coaching_raw:
             coaching_result = CoachingOutput(**coaching_raw)
     except Exception as e:
@@ -67,6 +79,7 @@ async def capture(input_data: MovementWindowInput):
         tracking_confidence=0.94,
         coaching=coaching_result,
         coaching_error=coaching_error,
+        coaching_engine=coaching_engine,
     )
 
     persist_session(input_data.session_id, response.model_dump(mode="json"))
@@ -77,6 +90,16 @@ async def capture(input_data: MovementWindowInput):
 @app.get("/api/health")
 async def health():
     return {"status": "ok", "version": "2.0.0"}
+
+
+@app.post("/api/video-relevance", response_model=VideoRelevanceResponse)
+async def video_relevance(input_data: VideoRelevanceRequest):
+    if not gemini_available():
+        raise HTTPException(status_code=503, detail="Video verification requires a valid GEMINI_API_KEY.")
+    result = assess_penalty_video(input_data.frames)
+    if result is None:
+        raise HTTPException(status_code=502, detail="Gemini could not verify this video. Please try again.")
+    return VideoRelevanceResponse(**result)
 
 
 @app.get("/api/metrics", response_model=DiagnosticsPayload)
