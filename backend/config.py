@@ -26,7 +26,7 @@ BITNET_TIMEOUT_SEC = int(os.getenv("BITNET_TIMEOUT_SEC", "30"))
 INFERENCE_BACKEND = os.getenv("INFERENCE_BACKEND", "bitnet")
 
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.5-flash")
 GEMINI_TIMEOUT_SEC = int(os.getenv("GEMINI_TIMEOUT_SEC", "20"))
 
 SCORING_WEIGHTS = {

@@ -123,16 +123,17 @@
 
         @media (min-width: 1024px) {
             .dashboard-main {
-                display: grid !important;
-                grid-template-columns: minmax(0, 1fr) 22rem !important;
-                align-items: stretch;
+                display: block !important;
+                padding-right: calc(22rem + 52px) !important;
             }
-            .analysis-column { grid-column: 1; grid-row: 1; }
+            .analysis-column { height: 100%; min-height: 0; }
             .dashboard-main > aside {
-                grid-column: 2;
-                grid-row: 1;
-                height: 100%;
-                min-width: 0;
+                position: absolute !important;
+                top: 32px;
+                right: 32px;
+                bottom: 32px;
+                width: 22rem !important;
+                min-width: 22rem;
             }
         }
 
@@ -259,7 +260,7 @@
 <div class="flex items-center gap-4 text-on-surface-variant">
 <button class="material-symbols-outlined text-[20px] hover:text-on-surface transition-colors" id="navVideoBtn" title="Upload Video">video_library</button>
 <button class="material-symbols-outlined text-[20px] hover:text-on-surface transition-colors" id="navWebcamBtn" title="Use Webcam">videocam</button>
-<div class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px] border border-white/10" id="headerAvatar">JD</div>
+<button class="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center font-bold text-[10px] border border-white/10 bg-cover bg-center hover:ring-2 hover:ring-secondary/60 transition-all" id="headerAvatar" title="Open profile">JD</button>
 </div>
 </div>
 </header>
@@ -622,11 +623,20 @@ async function loadUserProfile() {
         document.getElementById('sidebarName').textContent = name;
         document.getElementById('sidebarAvatar').textContent = initials;
         document.getElementById('headerAvatar').textContent = initials;
+        document.getElementById('headerAvatar').setAttribute('aria-label', name + ' profile');
+        if (session.user.image) {
+          ['headerAvatar', 'sidebarAvatar'].forEach(id => {
+            const avatar = document.getElementById(id);
+            avatar.style.backgroundImage = `url("${session.user.image}")`;
+            avatar.textContent = '';
+          });
+        }
       }
     }
   } catch {}
 }
 loadUserProfile();
+document.getElementById('headerAvatar').addEventListener('click', () => { window.location.href = '/onboarding'; });
 
 let isPlaying = false;
 let isWebcam = false;
@@ -708,6 +718,10 @@ async function verifyKickVideo(file) {
     body: JSON.stringify({ frames }),
   });
   const result = await response.json().catch(() => ({}));
+  if (response.status === 404) {
+    setVideoGateStatus('Cloud video verification is updating. Continuing with local pose analysis.', 'muted');
+    return;
+  }
   if (!response.ok) throw new Error(result.detail || 'Video verification is currently unavailable.');
   if (!result.accepted) {
     throw new Error(result.reason || 'This does not look like a clear football kick clip.');
