@@ -1,17 +1,30 @@
 import math
 from typing import List, Tuple
 
-from backend.config import (
-    SCORING_WEIGHTS,
-    LATERAL_DRIFT_THRESHOLD_HIGH,
-    HIP_ROTATION_IDEAL_MIN,
+try:  # Supports package execution locally and Railway's backend root directory.
+    from backend.config import (
+        SCORING_WEIGHTS,
+        LATERAL_DRIFT_THRESHOLD_HIGH,
+        HIP_ROTATION_IDEAL_MIN,
+        HIP_ROTATION_IDEAL_MAX,
+        STRIKE_LEG_EXTENSION_IDEAL_MIN,
+        STRIKE_LEG_EXTENSION_IDEAL_MAX,
+        FOLLOW_THROUGH_IDEAL_MIN,
+        FOLLOW_THROUGH_IDEAL_MAX,
+        RECOVERY_COM_IDEAL_MAX,
+    )
+except ModuleNotFoundError:
+    from config import (
+        SCORING_WEIGHTS,
+        LATERAL_DRIFT_THRESHOLD_HIGH,
+        HIP_ROTATION_IDEAL_MIN,
     HIP_ROTATION_IDEAL_MAX,
     STRIKE_LEG_EXTENSION_IDEAL_MIN,
     STRIKE_LEG_EXTENSION_IDEAL_MAX,
     FOLLOW_THROUGH_IDEAL_MIN,
     FOLLOW_THROUGH_IDEAL_MAX,
-    RECOVERY_COM_IDEAL_MAX,
-)
+        RECOVERY_COM_IDEAL_MAX,
+    )
 
 # MediaPipe Pose landmark indices
 LEFT_HIP = 23

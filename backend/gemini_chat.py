@@ -9,7 +9,10 @@ import base64
 import json
 from typing import Optional
 
-from backend.config import GEMINI_API_KEY, GEMINI_MODEL
+try:  # Supports package execution locally and Railway's backend root directory.
+    from backend.config import GEMINI_API_KEY, GEMINI_MODEL
+except ModuleNotFoundError:
+    from config import GEMINI_API_KEY, GEMINI_MODEL
 
 _conversations: dict = {}
 _chat_available = bool(GEMINI_API_KEY)

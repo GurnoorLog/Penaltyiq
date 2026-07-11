@@ -4,8 +4,12 @@ import time
 from urllib.request import urlopen, Request
 from urllib.error import URLError
 
-from backend.bitnet_client import get_external_request_count, health_check
-from backend.config import BITNET_ENDPOINT
+try:  # Supports package execution locally and Railway's backend root directory.
+    from backend.bitnet_client import get_external_request_count, health_check
+    from backend.config import BITNET_ENDPOINT
+except ModuleNotFoundError:
+    from bitnet_client import get_external_request_count, health_check
+    from config import BITNET_ENDPOINT
 
 
 def _check_internet() -> str:

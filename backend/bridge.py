@@ -6,8 +6,32 @@ from pathlib import Path
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.config import SESSIONS_DIR
-from backend.schemas import (
+try:  # Supports package execution locally and Railway's backend root directory.
+    from backend.config import SESSIONS_DIR
+    from backend.schemas import (
+        MovementWindowInput,
+        CaptureResponse,
+        DiagnosticsPayload,
+        CoachingOutput,
+        ChatRequest,
+        ChatResponse,
+        SubScores,
+        RawMeasurements,
+        VideoRelevanceRequest,
+        VideoRelevanceResponse,
+    )
+    from backend.scoring import compute_all
+    from backend.bitnet_client import generate_coaching
+    from backend.gemini_chat import (
+        assess_penalty_video,
+        chat as gemini_chat,
+        is_available as gemini_available,
+        refine_coaching,
+    )
+    from backend.metrics import MetricsCollector
+except ModuleNotFoundError:
+    from config import SESSIONS_DIR
+    from schemas import (
     MovementWindowInput,
     CaptureResponse,
     DiagnosticsPayload,
@@ -19,15 +43,15 @@ from backend.schemas import (
     VideoRelevanceRequest,
     VideoRelevanceResponse,
 )
-from backend.scoring import compute_all
-from backend.bitnet_client import generate_coaching
-from backend.gemini_chat import (
+    from scoring import compute_all
+    from bitnet_client import generate_coaching
+    from gemini_chat import (
     assess_penalty_video,
     chat as gemini_chat,
     is_available as gemini_available,
     refine_coaching,
 )
-from backend.metrics import MetricsCollector
+    from metrics import MetricsCollector
 
 app = FastAPI(title="PenaltyIQ Backend", version="2.0.0")
 

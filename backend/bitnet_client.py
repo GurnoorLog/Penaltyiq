@@ -5,7 +5,10 @@ from typing import Optional
 
 import httpx
 
-from backend.config import BITNET_ENDPOINT, BITNET_TIMEOUT_SEC, INFERENCE_BACKEND
+try:  # Supports package execution locally and Railway's backend root directory.
+    from backend.config import BITNET_ENDPOINT, BITNET_TIMEOUT_SEC, INFERENCE_BACKEND
+except ModuleNotFoundError:
+    from config import BITNET_ENDPOINT, BITNET_TIMEOUT_SEC, INFERENCE_BACKEND
 
 _EXTERNAL_REQUEST_COUNT = 0
 
