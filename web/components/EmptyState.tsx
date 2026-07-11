@@ -11,7 +11,7 @@ export function EmptyState({ title, description, cta, href }: EmptyStateProps) {
   return (
     <div className="pt-20 min-h-screen bg-grid px-4 flex items-center justify-center">
       <div className="text-center max-w-md">
-        <div className="text-6xl mb-6 opacity-50">\u{1F3B2}</div>
+        <div className="text-6xl mb-6 opacity-50">🎲</div>
         <h2 className="text-2xl font-bold mb-3">{title}</h2>
         <p className="text-[var(--text-muted)] mb-6">{description}</p>
         {cta && href && (

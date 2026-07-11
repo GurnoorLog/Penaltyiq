@@ -1,6 +1,5 @@
 "use client";
 
-import { SessionProvider } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { content } from "@/lib/content";
@@ -64,14 +63,14 @@ function HistoryList() {
               {s.thumbnailUrl ? (
                 <img src={s.thumbnailUrl} alt="" className="w-full h-full object-cover rounded-lg" />
               ) : (
-                "\u{1F3B2}"
+                "🎲"
               )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold truncate">{s.title ?? "Penalty Session"}</p>
               <p className="text-xs text-[var(--text-muted)]">
                 {new Date(s.createdAt).toLocaleDateString()}
-                {s.techniqueScore != null && ` \u2022 Score: ${s.techniqueScore}`}
+                {s.techniqueScore != null && ` • Score: ${s.techniqueScore}`}
               </p>
             </div>
             <span className={`text-xs font-medium ${statusColors[s.status] ?? ""}`}>
@@ -93,9 +92,5 @@ function HistoryList() {
 }
 
 export default function HistoryPage() {
-  return (
-    <SessionProvider>
-      <HistoryList />
-    </SessionProvider>
-  );
+  return <HistoryList />;
 }
