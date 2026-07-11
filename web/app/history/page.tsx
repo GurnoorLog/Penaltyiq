@@ -22,7 +22,7 @@ function HistoryList() {
 
   useEffect(() => {
     if (!session?.user?.id) return;
-    fetch(`/api/history?userId=${session.user.id}`)
+      fetch("/api/sessions")
       .then((r) => r.json())
       .then((data) => {
         setSessions(Array.isArray(data) ? data : []);

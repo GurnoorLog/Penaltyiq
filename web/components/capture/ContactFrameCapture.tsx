@@ -61,6 +61,19 @@ export function ContactFrameCapture({ videoRef, isPaused, onCapture }: ContactFr
       };
 
       const result = await postCapture(payload);
+
+      await fetch("/api/sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          techniqueScore: result.technique_score,
+          subScores: result.sub_scores,
+          rawMeasurements: result.raw_measurements,
+          coaching: result.coaching,
+          thumbnailUrl: thumbnail,
+        }),
+      });
+
       setCaptured(true);
       onCapture(result);
     } catch (err) {
