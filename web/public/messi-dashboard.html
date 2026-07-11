@@ -119,7 +119,10 @@
         }
 
         .is-embedded .fixed.left-0.top-16 { display: none !important; }
-        .is-embedded .dashboard-main { margin-left: 0 !important; }
+        .is-embedded .fixed.top-0 { display: none !important; }
+        .is-embedded .dashboard-main { margin-left: 0 !important; margin-top: 0 !important; }
+        .is-embedded .dashboard-main { height: 100vh !important; }
+        .is-embedded body { padding-top: 0 !important; }
 
         .dashboard-main {
             height: calc(100vh - 4rem);

@@ -111,7 +111,7 @@ function TipCard({ icon: Icon, title, description }: { icon: any; title: string;
 export default function MessiDashboard() {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedBuddy, setSelectedBuddy] = useState<AiBuddy>(aiBuddies[0]);
   const [activeView, setActiveView] = useState<string>("AI Coach");
   const [historyOpen, setHistoryOpen] = useState(false);
