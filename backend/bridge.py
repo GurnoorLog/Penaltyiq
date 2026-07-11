@@ -145,7 +145,12 @@ async def chat_endpoint(req: ChatRequest):
         with open(session_path) as f:
             context = json.load(f)
 
-    reply = gemini_chat(req.session_id, req.message, context)
+    reply = gemini_chat(
+        session_id=req.session_id,
+        message=req.message,
+        context=context,
+        generate_image=req.generate_image,
+    )
     return ChatResponse(reply=reply)
 
 

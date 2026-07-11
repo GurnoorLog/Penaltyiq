@@ -91,6 +91,7 @@ class DiagnosticsPayload(BaseModel):
 class ChatRequest(BaseModel):
     session_id: str
     message: str
+    generate_image: bool = False
 
 
 class ChatResponse(BaseModel):

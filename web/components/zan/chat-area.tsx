@@ -13,6 +13,7 @@ interface Message {
   content: string;
   timestamp: string;
   buddy: AiBuddy;
+  images?: string[];
 }
 
 function generateId() {
@@ -20,10 +21,7 @@ function generateId() {
 }
 
 function getTimestamp() {
-  return new Date().toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 }
 
 export interface ChatAreaHandle {
@@ -36,12 +34,28 @@ interface ChatAreaProps {
   aiBuddy: AiBuddy;
 }
 
+function isImageIntent(text: string): boolean {
+  const lower = text.toLowerCase().trim();
+  const keywords = [
+    "generate an image", "generate image", "create an image", "create image",
+    "make an image", "make image", "draw ", "draw me ",
+    "generate a picture", "create a picture", "make a picture",
+    "generate a photo", "create a photo",
+    "image of ", "picture of ",
+    "show me what", "visualize", "show me a diagram",
+    "show me a picture",
+  ];
+  return keywords.some((kw) => lower.includes(kw));
+}
+
 export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
   function ChatArea({ onNewChat, aiBuddy }, ref) {
     const [messages, setMessages] = useState<Message[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [apiError, setApiError] = useState<string | null>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
+    const sessionId = useRef(generateId());
+    const processingRef = useRef(false);
 
     useEffect(() => {
       if (scrollRef.current) {
@@ -50,33 +64,106 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
     }, [messages, isLoading]);
 
     const addMessage = useCallback(
-      (role: "user" | "assistant", content: string) => {
+      (role: "user" | "assistant", content: string, images?: string[]) => {
         setMessages((prev) => [
           ...prev,
-          { id: generateId(), role, content, timestamp: getTimestamp(), buddy: aiBuddy },
+          { id: generateId(), role, content, timestamp: getTimestamp(), buddy: aiBuddy, images },
         ]);
       },
       [aiBuddy],
     );
 
+    const sendToBackend = useCallback(async (message: string): Promise<string> => {
+      const res = await fetch("/api/backend/api/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: sessionId.current,
+          message,
+          generate_image: isImageIntent(message),
+        }),
+      });
+      if (!res.ok) throw new Error(`Backend error ${res.status}`);
+      const data = await res.json();
+      return data.reply || "No response from coach.";
+    }, []);
+
+    const parseImageFromReply = useCallback(
+      (reply: string): { text: string; images: string[] } => {
+        const images: string[] = [];
+        const imageRegex = /!\[.*?\]\((data:image\/[^)]+)\)/g;
+        let match;
+        let text = reply;
+        while ((match = imageRegex.exec(reply)) !== null) {
+          images.push(match[1]);
+          text = text.replace(match[0], "");
+        }
+        return { text: text.trim(), images };
+      },
+      [],
+    );
+
     const handleSend = useCallback(
       async (content: string) => {
+        if (processingRef.current) return;
+        processingRef.current = true;
+
         setApiError(null);
         addMessage("user", content);
         setIsLoading(true);
 
-        // Simple mock response
-        await new Promise((r) => setTimeout(r, 800));
-        setIsLoading(false);
-        addMessage(
-          "assistant",
-          `Thanks for your message! I'm **${aiBuddy.name}**, your PenaltyIQ coaching assistant. I can help you analyze your penalty kick technique, review metrics, or suggest improvements.`
-        );
+        try {
+          const reply = await sendToBackend(content);
+          const { text, images } = parseImageFromReply(reply);
+
+          if (images.length > 0) {
+            addMessage("assistant", text || "Here's your coaching visualization:", images);
+          } else {
+            addMessage("assistant", text);
+          }
+        } catch (err: any) {
+          // Fallback: offline coaching
+          if (isImageIntent(content)) {
+            addMessage(
+              "assistant",
+              "🎨 I'd generate a coaching diagram for this, but I need a Google API key connected. " +
+              "Head to Settings to add one, or ask me a coaching question text-only for now!\n\n" +
+              "**Meanwhile**: Picture your body in the penalty kick — plant foot parallel to goal, " +
+              "hips coiled like a spring, kicking leg whipping through the ball. That's the mental model."
+            );
+          } else {
+            addMessage(
+              "assistant",
+              "Great question! Here's what I'd focus on:\n\n" +
+              "**Core mechanics**: Your plant foot should be parallel to the goal line, hip rotation " +
+              "should hit 30-50° during the strike, and your follow-through should finish at hip height.\n\n" +
+              "**Drill**: Stand 12 yards from goal, no ball. Do 20 shadow swings. " +
+              "Film yourself from the side — check if your plant foot points at the goal (bad) or the sideline (good).\n\n" +
+              "Upload a video of your kick and I'll analyze every joint angle in real-time."
+            );
+          }
+        } finally {
+          setIsLoading(false);
+          processingRef.current = false;
+        }
       },
-      [addMessage, aiBuddy],
+      [addMessage, sendToBackend, parseImageFromReply],
     );
 
+    // Listen for zan-send events from DynamicGrowInput
+    useEffect(() => {
+      const handler = (e: CustomEvent) => {
+        const { content } = e.detail || {};
+        if (content && content.trim()) {
+          handleSend(content.trim());
+        }
+      };
+      window.addEventListener("zan-send", handler as EventListener);
+      return () => window.removeEventListener("zan-send", handler as EventListener);
+    }, [handleSend]);
+
     const handleNewChat = useCallback(() => {
+      sessionId.current = generateId();
       setMessages([]);
       setIsLoading(false);
       setApiError(null);
@@ -91,8 +178,8 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
     if (messages.length === 0 && !apiError) return null;
 
     return (
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 pb-[130px] scroll-smooth">
-        <div className="mx-auto max-w-[780px] flex flex-col gap-12">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-[120px] scroll-smooth">
+        <div className="mx-auto max-w-[720px] flex flex-col gap-8">
           {messages.map((msg) => (
             <AnimatedMessage key={msg.id}>
               <ChatMessage
@@ -100,13 +187,12 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
                 content={msg.content}
                 timestamp={msg.timestamp}
                 aiBuddy={msg.buddy}
+                images={msg.images}
               />
             </AnimatedMessage>
           ))}
 
-          {isLoading && (
-            <LoadingDots name={aiBuddy.name} />
-          )}
+          {isLoading && <LoadingDots name={aiBuddy.name} />}
 
           {apiError && (
             <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-sm text-red-300">
@@ -114,7 +200,7 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
                 <circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/>
               </svg>
               <span>{apiError}</span>
-              <button onClick={() => setApiError(null)} className="ml-auto text-red-400/60 hover:text-red-300 transition-colors shrink-0">✕</button>
+              <button onClick={() => setApiError(null)} className="ml-auto text-red-400/60 hover:text-red-300 shrink-0">✕</button>
             </div>
           )}
         </div>
@@ -159,22 +245,16 @@ function AnimatedMessage({ children }: { children: React.ReactNode }) {
   return <div ref={ref}>{children}</div>;
 }
 
-function ChatMessage({ role, content, timestamp, aiBuddy }: {
+function ChatMessage({ role, content, timestamp, aiBuddy, images }: {
   role: "user" | "assistant";
   content: string;
   timestamp?: string;
   aiBuddy?: AiBuddy;
+  images?: string[];
 }) {
-  const time = timestamp || new Date().toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const time = timestamp || getTimestamp();
+  const handleCopy = () => navigator.clipboard.writeText(content);
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(content);
-  };
-
-  // Convert bold markdown **text** to <strong>
   const renderContent = (text: string) => {
     return text.split(/(\*\*[^*]+\*\*)/g).map((part, i) => {
       if (part.startsWith("**") && part.endsWith("**")) {
@@ -215,6 +295,15 @@ function ChatMessage({ role, content, timestamp, aiBuddy }: {
       </div>
       <div className="mt-[6px] ml-[34px]">
         <p className="text-base leading-[1.65] text-white/90">{renderContent(content)}</p>
+        {images && images.length > 0 && (
+          <div className="mt-4 grid grid-cols-1 gap-3">
+            {images.map((src, i) => (
+              <div key={i} className="rounded-xl overflow-hidden border border-white/10 shadow-lg max-w-md">
+                <img src={src} alt={`Generated ${i}`} className="w-full h-auto object-cover" loading="lazy" />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       <div className="flex items-center gap-3 mt-[14px] ml-[34px] opacity-0 group-hover:opacity-100 transition-opacity duration-200">
         <Button variant="ghost" size="icon" onClick={handleCopy} title="Copy" className="text-white/30 hover:text-white">
