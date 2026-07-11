@@ -336,6 +336,10 @@
 <span class="material-symbols-outlined text-[22px] shrink-0">leaderboard</span>
 <span class="hidden text-sm font-medium whitespace-nowrap nav-label">Metrics</span>
 </div>
+<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3 gap-3 cursor-pointer" id="navHistory" title="History">
+<span class="material-symbols-outlined text-[22px] shrink-0">history</span>
+<span class="hidden text-sm font-medium whitespace-nowrap nav-label">History</span>
+</div>
 <div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3 gap-3 cursor-pointer" id="navSystem" data-section="system" title="Settings">
 <span class="material-symbols-outlined text-[22px] shrink-0">settings</span>
 <span class="hidden text-sm font-medium whitespace-nowrap nav-label">Settings</span>
@@ -1465,6 +1469,11 @@ document.querySelectorAll('[data-section]').forEach(item => {
     const section = item.dataset.section;
     setActiveSection(section);
   });
+});
+
+// History nav — navigate to /history page
+document.getElementById('navHistory').addEventListener('click', () => {
+  window.location.href = '/history';
 });
 
 // Header nav buttons also update sidebar active state

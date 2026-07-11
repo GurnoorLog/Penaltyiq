@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { gsap } from "gsap";
-import { BrainCircuit, Sparkles, Target, Swords, BarChart3, TrendingUp, GitCompare, Lightbulb, Zap, Settings } from "lucide-react";
+import { BrainCircuit, Settings } from "lucide-react";
 import { Sidebar } from "@/components/zan/sidebar";
 import { ChatArea, type ChatAreaHandle } from "@/components/zan/chat-area";
 import DynamicGrowInput from "@/components/zan/dynamic-input";
@@ -82,7 +82,6 @@ export default function MessiDashboard() {
   const [loadingComplete, setLoadingComplete] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState<string>("AI Coach");
-  const [historyOpen, setHistoryOpen] = useState(false);
   const [hasMessages, setHasMessages] = useState(false);
   const chatAreaRef = useRef<ChatAreaHandle>(null);
   const mainRef = useRef<HTMLDivElement>(null);
@@ -114,6 +113,7 @@ export default function MessiDashboard() {
       case "Compare":
         setActiveView(action);
         break;
+      case "History": window.location.href = "/history"; break;
       case "Settings": setActiveView("Settings"); break;
     }
   }, [handleNewCoachChat]);
@@ -172,15 +172,6 @@ export default function MessiDashboard() {
           )}
         </div>
       </div>
-
-      {historyOpen && (
-        <div className="fixed inset-0 z-40 flex" style={{ background: "rgba(0, 0, 0, 0.4)", backdropFilter: "blur(4px)" }} onClick={() => setHistoryOpen(false)}>
-          <div className="w-72 bg-[#0a0a0b] border-r border-white/10 h-full overflow-y-auto p-4" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xs font-semibold text-white/60 uppercase tracking-wider mb-3">Session History</h3>
-            <p className="text-xs text-white/30">No sessions yet.</p>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

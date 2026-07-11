@@ -9,6 +9,7 @@ import {
   Swords,
   TrendingUp,
   GitCompare,
+  History,
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
@@ -27,6 +28,7 @@ const navItems = [
   { label: "Training", icon: Swords },
   { label: "Progress", icon: TrendingUp },
   { label: "Compare", icon: GitCompare },
+  { label: "History", icon: History },
   { label: "Settings", icon: Settings },
 ];
 
