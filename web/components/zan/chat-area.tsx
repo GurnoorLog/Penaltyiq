@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
 import { gsap } from "gsap";
-import { Copy, RotateCcw } from "lucide-react";
+import { Copy } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/zan/ui/avatar";
 import { Button } from "@/components/zan/ui/button";
 import type { AiBuddy } from "@/components/zan/audio-chat";
@@ -121,8 +121,7 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
           } else {
             addMessage("assistant", text);
           }
-        } catch (err: any) {
-          // Fallback: offline coaching
+        } catch {
           if (isImageIntent(content)) {
             addMessage(
               "assistant",
@@ -132,15 +131,24 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
               "hips coiled like a spring, kicking leg whipping through the ball. That's the mental model."
             );
           } else {
-            addMessage(
-              "assistant",
-              "Great question! Here's what I'd focus on:\n\n" +
+            const lower = content.toLowerCase();
+            let reply = "Great question! Here's what I'd focus on:\n\n" +
               "**Core mechanics**: Your plant foot should be parallel to the goal line, hip rotation " +
               "should hit 30-50° during the strike, and your follow-through should finish at hip height.\n\n" +
               "**Drill**: Stand 12 yards from goal, no ball. Do 20 shadow swings. " +
-              "Film yourself from the side — check if your plant foot points at the goal (bad) or the sideline (good).\n\n" +
-              "Upload a video of your kick and I'll analyze every joint angle in real-time."
-            );
+              "Film yourself from the side — check if your plant foot points at the goal (bad) or the sideline (good).";
+            if (lower.includes("hip") || lower.includes("rotation")) {
+              reply = "Great question! Hip rotation is the #1 power generator in a penalty kick.\n\n**Elite range**: 30-50° of rotation during strike. Below 30° → not enough power. Above 50° → pulling the ball wide.\n\n**Fix**: Visualize your kicking hip 'chasing' the ball through the net. Do 10 shadow swings daily focusing on that hip drive.";
+            } else if (lower.includes("plant") || lower.includes("foot") || lower.includes("standing")) {
+              reply = "Your plant foot is the foundation of every penalty.\n\n**Common mistake**: Pointing your standing foot at the goal opens the hips too early.\n\n**Fix**: Keep your standing foot **parallel to the goal line** — toes pointing to the sideline. This keeps your hips closed longer for more rotational power.\n\n**Drill**: Practice 20 step-overs focusing ONLY on plant foot placement at 90° to target.";
+            } else if (lower.includes("strike") || lower.includes("leg") || lower.includes("knee") || lower.includes("extension")) {
+              reply = "Strike leg extension is where power comes from.\n\n**Key range**: 100-140° at ball contact. Too bent → poking. Too straight → lunging.\n\n**Feel**: Imagine your leg is a whip — hip starts, thigh follows, lower leg 'cracks' through the ball at the last moment.\n\n**Drill**: Sit on a chair, extend your kicking leg, and practice the 'snap' motion. 20 reps per leg, 3 sets.";
+            } else if (lower.includes("follow")) {
+              reply = "Follow-through is the most underrated part of a penalty.\n\n**Ideal height**: 30-60°. Below 30° → cutting power short. Above 60° → leaning back and skying it.\n\n**Cue**: Your kicking foot should finish at hip height, pointing exactly where you want the ball to go.\n\n**Drill**: Take 10 slow-motion kicks, FREEZE your follow-through, check where your foot points.";
+            } else if (lower.includes("balance") || lower.includes("recovery") || lower.includes("land")) {
+              reply = "Recovery balance separates good takers from great ones.\n\n**What happens**: After striking, land on your kicking foot. If you hop or stumble, you lost core tension.\n\n**Fix**: Keep your core braced through the entire motion.\n\n**Drill**: Practice full kick motion without a ball, land on kicking foot, hold for 2 seconds without wobbling. 10 reps daily.";
+            }
+            addMessage("assistant", reply);
           }
         } finally {
           setIsLoading(false);
@@ -150,7 +158,6 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
       [addMessage, sendToBackend, parseImageFromReply],
     );
 
-    // Listen for zan-send events from DynamicGrowInput
     useEffect(() => {
       const handler = (e: CustomEvent) => {
         const { content } = e.detail || {};
@@ -178,8 +185,8 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
     if (messages.length === 0 && !apiError) return null;
 
     return (
-      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-4 pb-[120px] scroll-smooth">
-        <div className="mx-auto max-w-[720px] flex flex-col gap-8">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 scroll-smooth">
+        <div className="mx-auto max-w-[720px] flex flex-col gap-6 pb-24">
           {messages.map((msg) => (
             <AnimatedMessage key={msg.id}>
               <ChatMessage
