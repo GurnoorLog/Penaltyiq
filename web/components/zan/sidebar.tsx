@@ -10,10 +10,9 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeftOpen,
-  Asterisk,
+  BrainCircuit,
   Home,
   History,
-  BrainCircuit,
   Target,
   BarChart3,
   Swords,
@@ -60,8 +59,8 @@ export function Sidebar({ isOpen, onToggle, onAction }: SidebarProps) {
           </div>
 
           <div className="flex items-center px-5 pt-2 pb-5">
-            <div className="w-10 h-10 rounded-xl border border-white/15 bg-white/[0.03] flex items-center justify-center">
-              <Asterisk className="w-5 h-5 text-white/80" />
+            <div className="w-10 h-10 rounded-xl border border-emerald-500/20 bg-emerald-500/10 flex items-center justify-center">
+              <BrainCircuit className="w-5 h-5 text-emerald-400" />
             </div>
           </div>
 
