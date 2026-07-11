@@ -48,6 +48,8 @@
   --color-inverse-surface: #e0e3e5;
   --color-secondary-fixed: #eddcff;
   --color-error: #ffb4ab;
+  --color-gold: #FFD700;
+  --color-neon-blue: #00f3ff;
   --font-family-sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
   --font-family-mono: 'Geist Mono', monospace;
   --font-family-headline: 'Sora', sans-serif;
@@ -60,7 +62,7 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--color-surface-container-lowest);
+  background: var(--color-surface);
   color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
 }
@@ -69,37 +71,42 @@ body {
   min-height: 100vh;
 }
 
-.glass-panel {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-}
-
-.glass-panel-lg {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 16px;
-}
-
-.accent-gradient {
-  background: linear-gradient(135deg, #6366f1, #a855f7);
-}
-
-.glass-card {
+.glass-morphism {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
 }
 
-.primary-btn-glow {
-  box-shadow: 0 0 15px rgba(173, 198, 255, 0.3);
+.text-gradient-primary {
+  background: linear-gradient(135deg, #FFD700 0%, #adc6ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-bg-overlay {
+  background: linear-gradient(to bottom, rgba(16, 20, 21, 0.2) 0%, rgba(16, 20, 21, 0.8) 100%);
+}
+
+.iq-badge-glass {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(173, 198, 255, 0.3));
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
 }
 
 .performance-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 24px;
+}
+
+.neon-glow {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.3);
+}
+
+.video-container-glow {
+  box-shadow: 0 0 50px rgba(255, 215, 0, 0.15);
 }
