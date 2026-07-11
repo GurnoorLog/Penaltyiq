@@ -9,6 +9,7 @@ import { CoachSheet } from "@/components/dashboard/mobile/CoachSheet";
 import { TabBar } from "@/components/dashboard/mobile/TabBar";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { useState } from "react";
+import { DashboardSelector } from "@/components/DashboardSelector";
 
 export default function DashboardPage() {
   const { data, diagnostics } = useDashboardData();
@@ -16,6 +17,7 @@ export default function DashboardPage() {
 
   return (
     <>
+      <DashboardSelector />
       <div className="hidden md:flex flex-col min-h-screen bg-grid pt-14">
         <div className="flex-1 flex gap-4 p-4">
           <div className="w-64 space-y-3">

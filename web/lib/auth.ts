@@ -40,11 +40,5 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
-      if (url.includes("/api/auth/callback")) {
-        return `${baseUrl}/select-dashboard`;
-      }
-      return url.startsWith(baseUrl) ? url : baseUrl;
-    },
   },
 });
