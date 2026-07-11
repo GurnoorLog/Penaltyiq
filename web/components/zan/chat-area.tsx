@@ -74,18 +74,31 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
     );
 
     const sendToBackend = useCallback(async (message: string): Promise<string> => {
-      const res = await fetch("/api/backend/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          session_id: sessionId.current,
-          message,
-          generate_image: isImageIntent(message),
-        }),
-      });
-      if (!res.ok) throw new Error(`Backend error ${res.status}`);
-      const data = await res.json();
-      return data.reply || "No response from coach.";
+      // Try proxy first, then direct backend URL
+      const backends = [
+        "/api/backend/api/chat",
+        ...(typeof window !== "undefined" && localStorage.getItem("penaltyiq-api-base")
+          ? [localStorage.getItem("penaltyiq-api-base") + "/api/chat"]
+          : []),
+      ];
+      for (const url of backends) {
+        try {
+          const res = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              session_id: sessionId.current,
+              message,
+              generate_image: isImageIntent(message),
+            }),
+          });
+          if (res.ok) {
+            const data = await res.json();
+            return data.reply || "No response from coach.";
+          }
+        } catch {}
+      }
+      throw new Error("Backend unreachable");
     }, []);
 
     const parseImageFromReply = useCallback(

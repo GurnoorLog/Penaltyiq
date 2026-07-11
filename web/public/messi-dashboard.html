@@ -121,11 +121,25 @@
             --cursor-scale: 1.18;
         }
 
+        main { margin-left: var(--nav-width, 4rem); transition: margin-left 0.3s; }
         .is-embedded nav.fixed { display: none !important; }
+        .is-embedded main { margin-left: 0 !important; }
         .is-embedded header.fixed { display: none !important; }
         .is-embedded main { margin: 0 !important; padding: 0 !important; }
         .is-embedded body { padding-top: 0 !important; }
         .is-embedded .dashboard-main { height: 100vh !important; padding: 0.75rem !important; gap: 0.75rem !important; }
+
+        /* Collapsible nav */
+        .nav-expanded { --nav-width: 14rem; }
+        .nav-expanded .nav-label { display: block !important; }
+        .nav-expanded #navControlLabel { opacity: 1 !important; }
+        .nav-collapsed .nav-label { display: none !important; }
+        .nav-collapsed #navControlLabel { display: none !important; }
+        .nav-collapsed #sidebarProfileBtn .nav-label { display: none !important; }
+
+        /* Nav transition helper */
+        #mainNav { overflow: hidden; }
+        #mainNav > * { white-space: nowrap; }
 
         .dashboard-main {
             height: calc(100vh - 4rem);
@@ -301,35 +315,38 @@
 </header>
 
 <!-- Navigation -->
-<nav class="fixed left-0 top-16 bottom-0 z-40 flex flex-col py-6 apple-glass-dark border-r border-white/5 w-20 md:w-64 transition-all duration-500">
-<div class="px-8 mb-10 hidden md:block">
-<p class="font-label-caps text-[10px] font-bold text-secondary tracking-[0.2em] mb-1">CONTROL</p>
-<p class="font-body-md text-xs text-on-surface-variant/60" id="activeSessionLabel">No active session</p>
+<nav class="fixed left-0 top-16 bottom-0 z-40 flex flex-col py-4 apple-glass-dark border-r border-white/5 transition-all duration-300" id="mainNav" style="width: var(--nav-width, 4rem)">
+<!-- Toggle button -->
+<div class="flex items-center justify-between px-3 mb-4">
+<button id="navToggleBtn" class="w-7 h-7 flex items-center justify-center rounded-lg text-white/50 hover:text-white hover:bg-white/10 transition-all" title="Toggle sidebar">
+<span class="material-symbols-outlined text-[20px]">menu_open</span>
+</button>
+<span class="text-[10px] font-bold text-secondary tracking-[0.2em] hidden md:block opacity-0 transition-opacity" id="navControlLabel">CONTROL</span>
 </div>
-<div class="flex-1 flex flex-col gap-1 px-4">
-<div class="bg-white/10 text-white rounded-xl flex items-center justify-start p-3.5 gap-3 cursor-pointer" id="navAnalysis" data-section="analysis">
-<span class="material-symbols-outlined text-[22px]">analytics</span>
-<span class="hidden md:inline font-body-md text-sm font-medium">Analysis</span>
+<div class="flex-1 flex flex-col gap-1 px-3">
+<div class="bg-white/10 text-white rounded-xl flex items-center justify-start p-3 gap-3 cursor-pointer" id="navAnalysis" data-section="analysis" title="Analysis">
+<span class="material-symbols-outlined text-[22px] shrink-0">analytics</span>
+<span class="hidden text-sm font-medium whitespace-nowrap nav-label">Analysis</span>
 </div>
-<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3.5 gap-3 cursor-pointer" id="navCapture" data-section="capture">
-<span class="material-symbols-outlined text-[22px]">video_library</span>
-<span class="hidden md:inline font-body-md text-sm font-medium">Capture</span>
+<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3 gap-3 cursor-pointer" id="navCapture" data-section="capture" title="Capture">
+<span class="material-symbols-outlined text-[22px] shrink-0">video_library</span>
+<span class="hidden text-sm font-medium whitespace-nowrap nav-label">Capture</span>
 </div>
-<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3.5 gap-3 cursor-pointer" id="navMetrics" data-section="metrics">
-<span class="material-symbols-outlined text-[22px]">leaderboard</span>
-<span class="hidden md:inline font-body-md text-sm font-medium">Metrics</span>
+<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3 gap-3 cursor-pointer" id="navMetrics" data-section="metrics" title="Metrics">
+<span class="material-symbols-outlined text-[22px] shrink-0">leaderboard</span>
+<span class="hidden text-sm font-medium whitespace-nowrap nav-label">Metrics</span>
 </div>
-<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3.5 gap-3 cursor-pointer" id="navSystem" data-section="system">
-<span class="material-symbols-outlined text-[22px]">settings</span>
-<span class="hidden md:inline font-body-md text-sm font-medium">System</span>
+<div class="text-on-surface-variant hover:bg-white/5 transition-all rounded-xl flex items-center justify-start p-3 gap-3 cursor-pointer" id="navSystem" data-section="system" title="Settings">
+<span class="material-symbols-outlined text-[22px] shrink-0">settings</span>
+<span class="hidden text-sm font-medium whitespace-nowrap nav-label">Settings</span>
 </div>
 </div>
-<div class="px-4 mt-auto">
-<div class="apple-glass rounded-2xl p-4 flex items-center gap-3 border border-white/5">
-<div class="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary/80 to-secondary flex items-center justify-center text-black" id="sidebarAvatar"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
-<div class="hidden md:block">
-<p class="text-xs font-semibold text-on-surface" id="sidebarName">Guest Athlete</p>
-<p class="text-[10px] text-tertiary font-bold tracking-tight" id="sidebarRole">ATHLETE</p>
+<div class="px-3 mt-auto">
+<div class="apple-glass rounded-xl p-3 flex items-center gap-3 border border-white/5 cursor-pointer" id="sidebarProfileBtn" title="Profile">
+<div class="w-9 h-9 rounded-xl bg-gradient-to-br from-secondary/80 to-secondary flex items-center justify-center text-black shrink-0" id="sidebarAvatar"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg></div>
+<div class="hidden nav-label">
+<p class="text-xs font-semibold text-on-surface" id="sidebarName">Guest</p>
+<p class="text-[9px] text-tertiary font-bold tracking-tight">ATHLETE</p>
 </div>
 </div>
 </div>
@@ -645,7 +662,8 @@ const navSystem = document.getElementById('navSystem');
 const coachingCard = document.getElementById('coachingCard');
 
 // API base — uses Next.js API proxy (/api/backend/* -> backend)
-const API_BASE = '/api/backend';
+// Override by setting penaltyiq-api-base in localStorage to a direct URL
+const API_BASE = (typeof localStorage !== 'undefined' && localStorage.getItem('penaltyiq-api-base')) || '/api/backend';
 
 // Fetch Google profile and update UI
 async function loadUserProfile() {
@@ -672,6 +690,23 @@ async function loadUserProfile() {
 }
 loadUserProfile();
 document.getElementById('headerAvatar').addEventListener('click', () => { window.location.href = '/onboarding'; });
+document.getElementById('sidebarProfileBtn').addEventListener('click', () => { window.location.href = '/onboarding'; });
+
+// Nav toggle
+const mainNav = document.getElementById('mainNav');
+const navToggleBtn = document.getElementById('navToggleBtn');
+const mainEl = document.querySelector('main');
+let navExpanded = false;
+navToggleBtn.addEventListener('click', () => {
+  navExpanded = !navExpanded;
+  mainNav.classList.toggle('nav-expanded', navExpanded);
+  mainNav.classList.toggle('nav-collapsed', !navExpanded);
+  const width = navExpanded ? '14rem' : '4rem';
+  mainNav.style.setProperty('--nav-width', width);
+  if (mainEl) mainEl.style.marginLeft = width;
+  navToggleBtn.querySelector('.material-symbols-outlined').textContent = navExpanded ? 'menu' : 'menu_open';
+});
+mainNav.classList.add('nav-collapsed');
 
 let isPlaying = false;
 let isWebcam = false;
