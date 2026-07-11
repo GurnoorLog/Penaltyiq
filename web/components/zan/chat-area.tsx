@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback, forwardRef, useImperativeHandle } from "react";
+import { gsap } from "gsap";
 import { Copy, RotateCcw } from "lucide-react";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/zan/ui/avatar";
 import { Button } from "@/components/zan/ui/button";
@@ -93,20 +94,18 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-4 py-6 pb-[130px] scroll-smooth">
         <div className="mx-auto max-w-[780px] flex flex-col gap-12">
           {messages.map((msg) => (
-            <ChatMessage
-              key={msg.id}
-              role={msg.role}
-              content={msg.content}
-              timestamp={msg.timestamp}
-              aiBuddy={msg.buddy}
-            />
+            <AnimatedMessage key={msg.id}>
+              <ChatMessage
+                role={msg.role}
+                content={msg.content}
+                timestamp={msg.timestamp}
+                aiBuddy={msg.buddy}
+              />
+            </AnimatedMessage>
           ))}
 
           {isLoading && (
-            <div className="flex items-center gap-2 text-sm text-white/50 px-4">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              {aiBuddy.name} is thinking...
-            </div>
+            <LoadingDots name={aiBuddy.name} />
           )}
 
           {apiError && (
@@ -123,6 +122,42 @@ export const ChatArea = forwardRef<ChatAreaHandle, ChatAreaProps>(
     );
   },
 );
+
+function LoadingDots({ name }: { name: string }) {
+  const dot1 = useRef<HTMLDivElement>(null);
+  const dot2 = useRef<HTMLDivElement>(null);
+  const dot3 = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.2 });
+    tl.to(dot1.current, { y: -4, duration: 0.25, ease: "power2.out" })
+      .to(dot1.current, { y: 0, duration: 0.25, ease: "power2.in" })
+      .to(dot2.current, { y: -4, duration: 0.25, ease: "power2.out" }, "+=0.05")
+      .to(dot2.current, { y: 0, duration: 0.25, ease: "power2.in" })
+      .to(dot3.current, { y: -4, duration: 0.25, ease: "power2.out" }, "+=0.05")
+      .to(dot3.current, { y: 0, duration: 0.25, ease: "power2.in" });
+    return () => { tl.kill(); };
+  }, []);
+  return (
+    <div className="flex items-center gap-2.5 text-sm text-white/50 px-4 py-2">
+      <div className="flex items-center gap-1">
+        <div ref={dot1} className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        <div ref={dot2} className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+        <div ref={dot3} className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+      </div>
+      <span>{name}</span>
+    </div>
+  );
+}
+
+function AnimatedMessage({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      gsap.fromTo(ref.current, { opacity: 0, y: 20, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power3.out" });
+    }
+  }, []);
+  return <div ref={ref}>{children}</div>;
+}
 
 function ChatMessage({ role, content, timestamp, aiBuddy }: {
   role: "user" | "assistant";

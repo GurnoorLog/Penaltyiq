@@ -78,10 +78,6 @@ export function Sidebar({ isOpen, onToggle, onAction }: SidebarProps) {
 
           <div className="px-3 pt-2 pb-4">
             <div className="h-px bg-white/[0.05] mb-3" />
-            <div className="flex items-center gap-3 px-4 py-2.5">
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0" />
-              <span className="text-xs text-white/50">BankaiAir</span>
-            </div>
           </div>
         </div>
       ) : (
@@ -110,9 +106,6 @@ export function Sidebar({ isOpen, onToggle, onAction }: SidebarProps) {
             </div>
           ))}
           <div className="mt-auto w-6 h-px bg-white/10 my-1.5" />
-          <div className="w-11 h-11 flex items-center justify-center">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          </div>
         </div>
       )}
     </aside>
