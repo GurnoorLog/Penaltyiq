@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+:root {
+  --accent: #6366f1;
+  --accent-light: #818cf8;
+  --bg-dark: #0f0f13;
+  --bg-card: rgba(255, 255, 255, 0.04);
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --text: #f1f1f7;
+  --text-muted: #8b8ba7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-dark);
+  color: var(--text);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+}
+
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.glass-panel {
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 12px;
+}
+
+.glass-panel-lg {
+  background: var(--glass);
+  backdrop-filter: blur(24px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+}
+
+.accent-gradient {
+  background: linear-gradient(135deg, var(--accent), #a855f7);
+}
