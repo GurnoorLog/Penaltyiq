@@ -121,6 +121,21 @@
             align-items: start;
         }
 
+        @media (min-width: 1024px) {
+            .dashboard-main {
+                display: grid !important;
+                grid-template-columns: minmax(0, 1fr) 22rem !important;
+                align-items: stretch;
+            }
+            .analysis-column { grid-column: 1; grid-row: 1; }
+            .dashboard-main > aside {
+                grid-column: 2;
+                grid-row: 1;
+                height: 100%;
+                min-width: 0;
+            }
+        }
+
         .analysis-column { min-width: 0; min-height: 0; }
 
         .analysis-stage {
@@ -592,7 +607,7 @@ const navSystem = document.getElementById('navSystem');
 const coachingCard = document.getElementById('coachingCard');
 
 // API base
-const API_BASE = 'http://127.0.0.1:8000';
+const API_BASE = '/api/backend';
 
 let isPlaying = false;
 let isWebcam = false;
