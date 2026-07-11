@@ -1,52 +1,39 @@
 "use client";
 
-import { StatWidget } from "@/components/dashboard/StatWidget";
-import { CoachPanel } from "@/components/dashboard/CoachPanel";
-import { Dock } from "@/components/dashboard/Dock";
-import { UtilityIcons } from "@/components/dashboard/UtilityIcons";
-import { WidgetStack } from "@/components/dashboard/mobile/WidgetStack";
-import { CoachSheet } from "@/components/dashboard/mobile/CoachSheet";
-import { TabBar } from "@/components/dashboard/mobile/TabBar";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { useState } from "react";
-import { DashboardSelector } from "@/components/DashboardSelector";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { RulerCarousel, type CarouselItem } from "@/components/ui/ruler-carousel";
 
 export default function DashboardPage() {
-  const { data, diagnostics } = useDashboardData();
-  const [mobileView, setMobileView] = useState<string>("home");
+  const router = useRouter();
+  const [theme, setTheme] = useState<string | null>(null);
 
-  return (
-    <>
-      <DashboardSelector />
-      <div className="hidden md:flex flex-col min-h-screen bg-grid pt-14">
-        <div className="flex-1 flex gap-4 p-4">
-          <div className="w-64 space-y-3">
-            <StatWidget icon="🏆" label="Technique Score" value={`${data.techniqueScore}`} caption={data.subScores ? `Stability: ${data.subScores.plant_leg_stability}` : ""} accentColor="#6366f1" progress={data.techniqueScore / 100} />
-            <StatWidget icon="🔍" label="Tracking Confidence" value={`${Math.round(data.trackingConfidence * 100)}%`} caption="MediaPipe Pose" accentColor="#22c55e" progress={data.trackingConfidence} />
-            <StatWidget icon="📊" label="Sessions Analyzed" value="12" caption="All time" accentColor="#f59e0b" progress={0.5} />
-          </div>
+  useEffect(() => {
+    const stored = localStorage.getItem("penaltyiq-dashboard-theme");
+    if (stored === "desktop") {
+      router.replace("/dashboard/messi");
+    } else if (stored === "haaland") {
+      router.replace("/dashboard/haaland");
+    }
+    setTheme(stored);
+  }, [router]);
 
-          <div className="flex-1">
-            <CoachPanel data={data} diagnostics={diagnostics} />
-          </div>
-        </div>
+  if (theme) return null;
 
-        <div className="absolute top-4 right-4">
-          <UtilityIcons diagnostics={diagnostics} />
-        </div>
+  const items: CarouselItem[] = [
+    { id: 1, title: "Messi" },
+    { id: 2, title: "Haaland" },
+  ];
 
-        <Dock />
-      </div>
+  const handleSelect = (item: CarouselItem) => {
+    const themeKey = item.title === "Messi" ? "desktop" : "haaland";
+    localStorage.setItem("penaltyiq-dashboard-theme", themeKey);
+    if (themeKey === "desktop") {
+      router.push("/dashboard/messi");
+    } else {
+      router.push("/dashboard/haaland");
+    }
+  };
 
-      <div className="md:hidden flex flex-col min-h-screen bg-grid pt-14">
-        {mobileView === "home" && (
-          <div className="flex-1 p-4 space-y-4">
-            <WidgetStack data={data} />
-            <CoachSheet data={data} diagnostics={diagnostics} />
-          </div>
-        )}
-        <TabBar active={mobileView} onTabChange={setMobileView} />
-      </div>
-    </>
-  );
+  return <RulerCarousel originalItems={items} onSelect={handleSelect} />;
 }

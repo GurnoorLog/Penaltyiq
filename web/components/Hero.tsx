@@ -40,6 +40,8 @@ export function Hero() {
     };
   }, []);
 
+  const goToDashboard = () => router.push("/dashboard");
+
   return (
     <>
       <div className="fixed inset-0 z-[-1] overflow-hidden">
@@ -68,7 +70,7 @@ export function Hero() {
               Login
             </button>
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={goToDashboard}
               className="bg-gold text-on-primary-fixed font-bold px-8 py-3 rounded-xl text-sm font-['Geist_Mono'] font-medium hover:shadow-2xl hover:shadow-gold/30 active:scale-95 transition-all"
             >
               Sign Up
@@ -97,7 +99,7 @@ export function Hero() {
 
             <div className="flex flex-col items-center gap-8 mb-24">
               <button
-                onClick={() => router.push("/dashboard")}
+                onClick={goToDashboard}
                 className="glass-morphism bg-white/10 hover:bg-white/20 text-on-surface font-bold px-12 py-6 rounded-2xl flex items-center gap-4 transition-all duration-300 hover:translate-y-[-2px] border border-gold/30"
               >
                 <img
@@ -166,7 +168,7 @@ export function Hero() {
             </div>
 
             <div className="col-span-12 md:col-span-4 glass-morphism p-10 rounded-[32px] hover:translate-y-[-4px] transition-all duration-300 group border border-white/20">
-              <span className="material-symbols-outlined text-gold mb-6 text-4xl" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2.5rem" }}>leaderboard</span>
+              <span className="material-symbols-outlined text-gold mb-6" style={{ fontVariationSettings: "'FILL' 1", fontSize: "2.5rem" }}>leaderboard</span>
               <h3 className="font-['Sora'] font-semibold text-on-surface mb-4 text-2xl">Global Leaderboard</h3>
               <p className="text-on-surface-variant text-base mb-8 leading-relaxed font-medium">See where you rank against academy players and pros worldwide in our global performance database.</p>
               <button className="text-gold text-sm font-['Geist_Mono'] font-bold flex items-center gap-3 tracking-widest">
@@ -200,7 +202,7 @@ export function Hero() {
             <h2 className="font-['Sora'] font-extrabold text-on-surface mb-10 tracking-tight neon-glow" style={{ fontSize: "clamp(2rem, 4vw, 4rem)", lineHeight: "1.1", letterSpacing: "-0.02em" }}>Ready to dominate the spot?</h2>
             <p className="text-white text-lg mb-16 mx-auto font-medium leading-relaxed drop-shadow-md" style={{ maxWidth: "36rem" }}>Join 15,000+ athletes who have improved their conversion rate by an average of 22% in just 30 days of deliberate practice.</p>
             <button
-              onClick={() => router.push("/dashboard")}
+              onClick={goToDashboard}
               className="bg-gold text-on-primary-fixed font-extrabold px-16 py-7 rounded-2xl font-['Sora'] font-semibold scale-95 hover:scale-100 active:scale-95 transition-all duration-500 shadow-2xl" style={{ fontSize: "clamp(1.125rem, 2vw, 1.5rem)", boxShadow: "0 0 50px rgba(255,215,0,0.4)" }}
             >
               Get Started Free
