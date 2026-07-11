@@ -12,7 +12,7 @@ export const content = {
   hero: {
     title: "Perfect Your Penalty",
     subtitle: "AI-powered biomechanical analysis of your penalty kicks. Track, score, and improve with actionable coaching.",
-    cta: "GET STARTED",
+    cta: "Sign in with Google",
     demo: "WATCH DEMO",
   },
   features: [

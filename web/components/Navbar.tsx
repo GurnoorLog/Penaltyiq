@@ -2,12 +2,17 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
+import { usePathname } from "next/navigation";
 import { content } from "@/lib/content";
 import { AccountMenu } from "./AccountMenu";
 import { SignInButton } from "./SignInButton";
 
 export function Navbar() {
   const { data: session } = useSession();
+  const pathname = usePathname();
+  const isLanding = pathname === "/";
+
+  if (isLanding) return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 glass-panel rounded-none border-t-0 border-x-0">
