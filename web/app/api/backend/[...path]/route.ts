@@ -6,7 +6,10 @@ export const dynamic = "force-dynamic";
 async function proxy(request: NextRequest, context: RouteContext<"/api/backend/[...path]">) {
   const backendUrl = process.env.NEXT_PUBLIC_API_BASE;
   if (!backendUrl) {
-    return NextResponse.json({ detail: "Backend URL is not configured." }, { status: 503 });
+    return NextResponse.json(
+      { detail: "The analysis backend is not configured. Set NEXT_PUBLIC_API_BASE in Vercel environment variables." },
+      { status: 503 },
+    );
   }
 
   const { path } = await context.params;
