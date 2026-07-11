@@ -1,13 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const inter = Inter({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
-  title: "PenaltyIQ",
-  description: "AI-powered biomechanical analysis of your penalty kicks",
+  title: "Perfect Your Penalty",
+  description: "Professional-grade biomechanical analysis for every kick. Master the technique that beats world-class keepers with data-driven precision.",
 };
 
 export default function RootLayout({
@@ -17,7 +14,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body>
         <Providers>
           <main className="min-h-screen">{children}</main>
         </Providers>

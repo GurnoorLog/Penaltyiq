@@ -1,157 +1,248 @@
 "use client";
 
 import { useSession, signIn } from "next-auth/react";
-import Link from "next/link";
-import { content } from "@/lib/content";
+import { useEffect } from "react";
 
 export function Hero() {
   const { data: session } = useSession();
 
+  useEffect(() => {
+    const card = document.querySelector(".glass-card");
+    if (!card) return;
+
+    function onMove(e: MouseEvent) {
+      const { clientX, clientY } = e;
+      const { innerWidth, innerHeight } = window;
+      const xPos = (clientX / innerWidth - 0.5) * 15;
+      const yPos = (clientY / innerHeight - 0.5) * 15;
+      (card as HTMLElement).style.transform = `perspective(1000px) rotateY(${xPos}deg) rotateX(${-yPos}deg)`;
+    }
+
+    function onLeave() {
+      (card as HTMLElement).style.transform = "perspective(1000px) rotateY(0deg) rotateX(0deg)";
+    }
+
+    document.addEventListener("mousemove", onMove);
+    card.addEventListener("mouseleave", onLeave);
+    return () => {
+      document.removeEventListener("mousemove", onMove);
+      card.removeEventListener("mouseleave", onLeave);
+    };
+  }, []);
+
+  const handleSignIn = () => {
+    signIn("google", { callbackUrl: "/" });
+  };
+
   return (
-    <div className="w-full min-h-screen bg-black flex items-center justify-center overflow-hidden">
-      <style>{`
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        @keyframes spin-slow-reverse {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(-360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 60s linear infinite;
-        }
-        .animate-spin-slow-reverse {
-          animation: spin-slow-reverse 60s linear infinite;
-        }
-      `}</style>
-
-      <div className="relative w-full h-screen overflow-hidden bg-[#09090b]">
-        {/* Background Video */}
-        <div className="absolute inset-0 w-full h-full">
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="w-full h-full object-cover opacity-40"
-          >
-            <source src="/landing-video.mp4" type="video/mp4" />
-          </video>
-        </div>
-
-        {/* Rotating Decorative Circles (from WaitlistHero) */}
-        <div
-          className="absolute inset-0 w-full h-full pointer-events-none"
-          style={{
-            perspective: "1200px",
-            transform: "perspective(1200px) rotateX(15deg)",
-            transformOrigin: "center bottom",
-          }}
-        >
-          <div className="absolute inset-0 animate-spin-slow">
-            <div
-              className="absolute top-1/2 left-1/2"
-              style={{
-                width: "2000px",
-                height: "2000px",
-                transform: "translate(-50%, -50%) rotate(279.05deg)",
-              }}
-            >
-              <img
-                src="https://framerusercontent.com/images/oqZEqzDEgSLygmUDuZAYNh2XQ9U.png?scale-down-to=2048"
-                alt=""
-                className="w-full h-full object-cover opacity-20"
-              />
-            </div>
+    <>
+      <header className="sticky top-0 z-50 bg-surface/80 backdrop-blur-xl border-b border-white/10 shadow-xl">
+        <div className="flex justify-between items-center w-full px-margin-desktop py-4 max-w-container-max mx-auto" style={{ paddingLeft: "48px", paddingRight: "48px", maxWidth: "1280px" }}>
+          <div className="text-[24px] font-['Sora'] font-bold text-on-surface tracking-tighter">
+            Perfect Your Penalty
           </div>
-
-          <div className="absolute inset-0 animate-spin-slow-reverse">
-            <div
-              className="absolute top-1/2 left-1/2"
-              style={{
-                width: "1000px",
-                height: "1000px",
-                transform: "translate(-50%, -50%) rotate(304.42deg)",
-              }}
+          <nav className="hidden md:flex items-center space-x-8">
+            <a href="#" className="text-on-surface-variant hover:text-on-surface transition-colors duration-200 text-[14px] font-['Geist_Mono'] font-medium tracking-wider">Features</a>
+            <a href="#" className="text-on-surface-variant hover:text-on-surface transition-colors duration-200 text-[14px] font-['Geist_Mono'] font-medium tracking-wider">Science</a>
+            <a href="#" className="text-on-surface-variant hover:text-on-surface transition-colors duration-200 text-[14px] font-['Geist_Mono'] font-medium tracking-wider">Pro Coaching</a>
+          </nav>
+          <div className="flex items-center space-x-4">
+            <button className="text-on-surface-variant hover:text-on-surface transition-colors duration-200 px-4 py-2 text-[14px] font-['Geist_Mono'] font-medium tracking-wider">Login</button>
+            <button
+              onClick={handleSignIn}
+              className="bg-primary text-on-primary font-bold px-6 py-2.5 rounded-lg text-[14px] font-['Geist_Mono'] font-medium tracking-wider scale-95 active:scale-90 transition-transform shadow-lg"
             >
-              <img
-                src="https://framerusercontent.com/images/UbucGYsHDAUHfaGZNjwyCzViw8.png?scale-down-to=1024"
-                alt=""
-                className="w-full h-full object-cover opacity-30"
-              />
-            </div>
-          </div>
-
-          <div className="absolute inset-0 animate-spin-slow">
-            <div
-              className="absolute top-1/2 left-1/2"
-              style={{
-                width: "800px",
-                height: "800px",
-                transform: "translate(-50%, -50%) rotate(48.33deg)",
-              }}
-            >
-              <img
-                src="https://framerusercontent.com/images/Ans5PAxtJfg3CwxlrPMSshx2Pqc.png"
-                alt=""
-                className="w-full h-full object-cover opacity-40"
-              />
-            </div>
+              Sign Up
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* Gradient Overlay */}
-        <div
-          className="absolute inset-0 z-10 pointer-events-none"
-          style={{
-            background: "linear-gradient(to top, #09090b 10%, rgba(9,9,11,0.8) 40%, transparent 100%)",
-          }}
-        />
-
-        {/* Content */}
-        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center gap-6 px-4">
-          {/* Logo Icon */}
-          <div className="w-20 h-20 rounded-2xl shadow-lg overflow-hidden ring-1 ring-white/10 mb-2">
-            <div className="w-full h-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl font-bold">
-              IQ
-            </div>
+      <main>
+        <section className="relative min-h-[90vh] flex flex-col items-center justify-center pt-24 pb-12 overflow-hidden px-margin-desktop" style={{ paddingLeft: "48px", paddingRight: "48px" }}>
+          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+            <div
+              className="w-full h-full bg-cover bg-center"
+              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDtbu3biv40Tg3SQr6trj9kl0mdXiywcApUUYnHyg0lsrSP4Mws3gakBgNg7QV3jMIenrwN9_mlCZ3VqnYJoKSr2JUfgXuLuONa5i2-rznmH20aoqmQ8rdKigIJaXZpZPQQbydSBJT7NbNFoS2cxRjN8pU7KF08UcegRdrWsjSDIdGlojfdCX2hgncDaC1LFlz2rRiftgO0F5_nkvaM2ciiXBM1HEm_WwnMVv8MbRwaui8sf_PrY3MfYz0oNbSvkzhy9aaMmW5FwJ2r')" }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-surface via-surface/60 to-surface" />
           </div>
 
-          <h1 className="text-5xl md:text-7xl font-bold text-center tracking-tight text-white">
-            {content.hero.title}
-          </h1>
-
-          <p className="text-lg md:text-xl text-zinc-400 text-center max-w-xl">
-            {content.hero.subtitle}
-          </p>
-
-          {/* Sign In / Get Started */}
-          <div className="mt-4">
-            {session ? (
-              <Link
-                href="/start"
-                className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full font-semibold text-white bg-[#0079da] hover:brightness-110 transition-all active:scale-95 text-base"
+          <div className="relative z-10 w-full max-w-container-max mx-auto text-center" style={{ maxWidth: "1280px" }}>
+            <div className="flex justify-center mb-8">
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center hover:rotate-12 transition-transform duration-300"
+                style={{ background: "linear-gradient(135deg, #6e06d0 0%, #b16bff 100%)" }}
               >
-                {content.hero.cta}
-              </Link>
-            ) : (
+                <span className="font-['Sora'] font-bold text-white tracking-tighter text-2xl">IQ</span>
+              </div>
+            </div>
+
+            <h1 className="text-[64px] font-['Sora'] font-extrabold text-on-surface mb-6 max-w-4xl mx-auto leading-tight" style={{ letterSpacing: "-0.02em" }}>
+              Master the Spot. <span className="text-primary">Dominate the Keeper.</span>
+            </h1>
+
+            <p className="text-[18px] text-on-surface-variant mb-12 max-w-2xl mx-auto opacity-90" style={{ lineHeight: "1.6" }}>
+              Professional-grade biomechanical analysis for every kick. Master the technique that beats world-class keepers with data-driven precision.
+            </p>
+
+            <div className="flex flex-col items-center gap-6 mb-20">
               <button
-                onClick={() => signIn("google")}
-                className="inline-flex items-center gap-3 px-8 py-3.5 rounded-full font-semibold text-white bg-[#0079da] hover:brightness-110 transition-all active:scale-95 text-base"
+                onClick={handleSignIn}
+                className="primary-btn-glow bg-primary-container text-on-primary-container font-bold px-10 py-5 rounded-full flex items-center gap-3 scale-95 active:scale-90 transition-all duration-300 group"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />
-                  <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                  <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
-                  <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                </svg>
-                {content.hero.cta}
+                <img
+                  alt="Google"
+                  className="w-6 h-6"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJ0igkEHMnJlJnmFjDf6TV6c8GdaqrpTgJ8u63ws-KGNVhfCHZDKljh8QP1qKUZRswunkPPGkOZ4Y-zEUqwGlWn9bY6EWbH-UnwCDYj7NUmhSmu0R47IrhXcYY1NSONCXngv5bptyNXW9x2g5agOkkSS26-icH6Ia9DuVx0tCmT8yaB6SOGRbKcMDkmRgbZ1JdXrmALKFEsIvNJBfttAWrSdG0iP7SsEe4q7dr2gfHtpqqmETLNY89lnyJImhFAPYudP4aChR_ItT3"
+                />
+                <span className="text-[14px] font-['Geist_Mono'] font-medium uppercase tracking-wider">Sign in with Google</span>
               </button>
-            )}
+              <p className="text-[12px] font-['Geist_Mono'] font-medium text-on-surface-variant/60" style={{ letterSpacing: "0.1em" }}>
+                No credit card required for initial analysis.
+              </p>
+            </div>
+
+            <div className="relative max-w-5xl mx-auto">
+              <div className="glass-card aspect-video rounded-3xl overflow-hidden group cursor-pointer">
+                <div
+                  className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
+                  style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBlrNfNvFwAIB_PIdKMJO83OMFGa-FcnNfUI-LDHl2vtjeCUQnIwQ2c_c7-2DlwfNDKBzCw7apIr5cuqvV69I7v76Fqr_e7fsPYqqynvH8k3jIKOYQmqfc5b8ORMTL7i_RL1UBfHxTI77PUX27k3qfjnQjE4o3QiUScf9AW5FLL6QRy9ITb9butbFxd41DS6XwUBbrRH3EOi64Mduf1dl-NkW951aVQqEmz0pESDIhedcARA3IeGcxjBC_CP0tUFBNOW4VHH2_l5ago')" }}
+                />
+                <div className="absolute inset-0 flex items-center justify-center bg-surface/20 group-hover:bg-surface/10 transition-colors">
+                  <div className="w-24 h-24 rounded-full bg-primary/20 backdrop-blur-md border border-primary/40 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                    <span className="material-symbols-outlined text-primary text-5xl" style={{ transform: "translateX(4px)", fontVariationSettings: "'FILL' 1" }}>play_arrow</span>
+                  </div>
+                </div>
+                <div className="absolute top-6 left-6 flex gap-3">
+                  <div className="bg-black/40 backdrop-blur-md px-4 py-2 rounded-lg border border-white/10">
+                    <span className="text-[12px] font-['Geist_Mono'] font-medium text-primary uppercase" style={{ letterSpacing: "0.1em" }}>Biometrics Live</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-24 px-margin-desktop max-w-container-max mx-auto" style={{ paddingLeft: "48px", paddingRight: "48px", maxWidth: "1280px" }}>
+          <div className="performance-grid">
+            <div className="col-span-12 md:col-span-8 glass-card p-10 rounded-3xl relative overflow-hidden h-[400px]">
+              <div className="relative z-10">
+                <span className="text-primary text-[14px] font-['Geist_Mono'] font-medium mb-2 block uppercase tracking-widest">Precision Matrix</span>
+                <h2 className="text-[40px] font-['Sora'] font-bold text-on-surface mb-4" style={{ letterSpacing: "-0.01em" }}>Real-time Biomechanics</h2>
+                <p className="text-on-surface-variant max-w-md">Our AI tracks 47 key skeletal markers during your run-up and strike to find millisecond improvements.</p>
+              </div>
+              <div className="absolute right-0 bottom-0 w-2/3 h-full opacity-50">
+                <div
+                  className="w-full h-full bg-contain bg-right-bottom bg-no-repeat"
+                  style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuD_bO4-V7raiSAEpMEVe78hDpgcRFTrKk97nZo5WQKvZrolb8uPK9CSSfzEAFDcJaGs4GCiIk6ZkXKEMM_xA8JJKn3aifB-lZi-jYv5eCD1B7fpskkSSXSoTgu3LGAg95EI2CjIk-kkuUh65M8llYjtcYNIPRarIMpsHlCnrSxE8vTkqh85rBsrxtbDk7b24Uz0mvFfKhM3ZsxUpy5RsvnwH-RsnQLXUEMi7Vnkp1Wfemi9d7JpPgLGeP7as6h2ff-QCWzKL-qwF_8X')" }}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-12 md:col-span-4 glass-card p-10 rounded-3xl flex flex-col justify-between">
+              <div>
+                <div
+                  className="w-12 h-12 rounded-lg flex items-center justify-center mb-6"
+                  style={{ background: "linear-gradient(135deg, #6e06d0 0%, #b16bff 100%)" }}
+                >
+                  <span className="material-symbols-outlined text-white" style={{ fontVariationSettings: "'FILL' 1" }}>psychology</span>
+                </div>
+                <h3 className="text-[24px] font-['Sora'] font-semibold text-on-surface mb-2">IQ Coaching</h3>
+                <p className="text-on-surface-variant text-[16px]">Get instant voice and visual cues to adjust your plant foot and hip angle.</p>
+              </div>
+              <div className="mt-8">
+                <div className="flex items-center gap-2">
+                  <div className="h-1 flex-1 bg-primary/20 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary" style={{ width: "88%" }} />
+                  </div>
+                  <span className="text-[12px] font-['Geist_Mono'] font-medium text-primary" style={{ letterSpacing: "0.1em" }}>88% Accuracy</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="col-span-12 md:col-span-4 glass-card p-8 rounded-3xl">
+              <span className="material-symbols-outlined text-primary mb-4" style={{ fontSize: "32px" }}>leaderboard</span>
+              <h3 className="text-[24px] font-['Sora'] font-semibold text-on-surface mb-2">Global Leaderboard</h3>
+              <p className="text-on-surface-variant text-[16px] mb-6">See where you rank against academy players and pros worldwide.</p>
+              <button className="text-primary text-[14px] font-['Geist_Mono'] font-medium flex items-center gap-2 group">
+                VIEW RANKINGS <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform" style={{ fontSize: "16px" }}>arrow_forward</span>
+              </button>
+            </div>
+
+            <div className="col-span-12 md:col-span-8 glass-card p-8 rounded-3xl flex items-center gap-10 overflow-hidden group">
+              <div className="flex-1">
+                <h3 className="text-[24px] font-['Sora'] font-semibold text-on-surface mb-2">Scientific Method</h3>
+                <p className="text-on-surface-variant text-[16px]">Developed in partnership with elite sport science labs in Europe to ensure your technique is built on proven physics.</p>
+              </div>
+              <div className="hidden sm:block w-1/3">
+                <div
+                  className="w-48 h-48 bg-cover bg-center rounded-2xl group-hover:rotate-6 transition-transform"
+                  style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBp_DCST3W9b78D6wE7PZwBB_PW1hpN33u1sgXRJBlGquygz6zzUYfOl73Em_R6JmH1Bj2vTX0V_CUauU_lqEHAeIU6mR8PXiO6VksMFpa9E5z2yeUVXL4t2BKLih1fehyzdl6dVZIRH2VUmz1pUYuyVAE47NLyl1yeMrsooPf-c7LSVkEqknvadVW7qy3wzf4yC6AJUg2pcZsXta3MiSko4IDcGuPhn0kJ-T8mnQ4oLVDhrM8_sgOdXybUR-4rXjfHEkVXHFp65Zyl')" }}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-32 px-margin-desktop text-center bg-surface-container-low relative" style={{ paddingLeft: "48px", paddingRight: "48px" }}>
+          <div className="absolute inset-0 overflow-hidden opacity-10">
+            <div
+              className="w-full h-full opacity-20"
+              style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDbh_3S_9pHRA6dl9WLwxZCPq2AOAHt-RO4n8nndmUyXREufWKgEWV-Ib65xFG7HtTKTjbrCSXd1Gzaa8ixMOOwXq7t5rZy2x1t5z6P-vb5y8797sbU-N9yc_acwE_ZtcwdxOlaQNb5F6XVjA4gd8phg3z1mxEYICLPAnwHFQfC_fWWjDfOBndQeP6FQdRRA4lqjyKZjgOj8qkDaTk0JKDcWk3oiy1_brLtIgSk0arcCmFRFKQzxTy2FGzdVmXCp3jCgS-nP6HXpbfz')" }}
+            />
+          </div>
+          <div className="relative z-10 max-w-3xl mx-auto">
+            <h2 className="text-[64px] font-['Sora'] font-extrabold text-on-surface mb-8" style={{ letterSpacing: "-0.02em", lineHeight: "1.1" }}>Ready to dominate the spot?</h2>
+            <p className="text-on-surface-variant text-[18px] mb-12" style={{ lineHeight: "1.6" }}>Join 15,000+ athletes who have improved their conversion rate by an average of 22% in just 30 days.</p>
+            <button
+              onClick={handleSignIn}
+              className="primary-btn-glow bg-primary text-on-primary font-bold px-12 py-5 rounded-full text-[24px] font-['Sora'] font-semibold scale-95 active:scale-90 transition-transform"
+            >
+              Get Started Free
+            </button>
+          </div>
+        </section>
+      </main>
+
+      <footer className="py-12 bg-surface-container-lowest border-t border-outline-variant/20">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 px-margin-desktop max-w-container-max mx-auto" style={{ paddingLeft: "48px", paddingRight: "48px", maxWidth: "1280px" }}>
+          <div className="space-y-6">
+            <div className="text-xl font-['Sora'] font-bold text-on-surface-variant">Perfect Your Penalty</div>
+            <p className="text-on-surface-variant text-[16px] opacity-60">Elevating human performance through real-time biomechanical intelligence and professional coaching.</p>
+          </div>
+          <div>
+            <h4 className="text-primary text-[14px] font-['Geist_Mono'] font-medium uppercase mb-6 tracking-widest">Resources</h4>
+            <ul className="space-y-4">
+              <li><a href="#" className="text-on-surface-variant hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline text-[12px] font-['Geist_Mono'] font-medium" style={{ letterSpacing: "0.1em" }}>Science of the Kick</a></li>
+              <li><a href="#" className="text-on-surface-variant hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline text-[12px] font-['Geist_Mono'] font-medium" style={{ letterSpacing: "0.1em" }}>Case Studies</a></li>
+              <li><a href="#" className="text-on-surface-variant hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline text-[12px] font-['Geist_Mono'] font-medium" style={{ letterSpacing: "0.1em" }}>Global Rankings</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-primary text-[14px] font-['Geist_Mono'] font-medium uppercase mb-6 tracking-widest">Company</h4>
+            <ul className="space-y-4">
+              <li><a href="#" className="text-on-surface-variant hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline text-[12px] font-['Geist_Mono'] font-medium" style={{ letterSpacing: "0.1em" }}>Privacy Policy</a></li>
+              <li><a href="#" className="text-on-surface-variant hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline text-[12px] font-['Geist_Mono'] font-medium" style={{ letterSpacing: "0.1em" }}>Terms of Service</a></li>
+              <li><a href="#" className="text-on-surface-variant hover:text-primary transition-colors duration-200 underline-offset-4 hover:underline text-[12px] font-['Geist_Mono'] font-medium" style={{ letterSpacing: "0.1em" }}>Contact Support</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-primary text-[14px] font-['Geist_Mono'] font-medium uppercase mb-6 tracking-widest">Connect</h4>
+            <div className="flex gap-4">
+              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors">
+                <span className="material-symbols-outlined text-on-surface-variant">share</span>
+              </a>
+              <a href="#" className="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/5 transition-colors">
+                <span className="material-symbols-outlined text-on-surface-variant">public</span>
+              </a>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+        <div className="mt-12 px-margin-desktop max-w-container-max mx-auto border-t border-white/5 pt-8" style={{ paddingLeft: "48px", paddingRight: "48px", maxWidth: "1280px" }}>
+          <p className="text-on-surface-variant text-[12px] font-['Geist_Mono'] font-medium opacity-40 text-center" style={{ letterSpacing: "0.1em" }}>© 2024 Perfect Your Penalty. Engineered for Elite Performance.</p>
+        </div>
+      </footer>
+    </>
   );
 }
