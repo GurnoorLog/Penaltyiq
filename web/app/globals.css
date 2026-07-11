@@ -1,6 +1,6 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL@20..48,100..700,0..1&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Hanken+Grotesk:wght@400;500&family=Geist+Mono:wght@500&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=block');
 
 @theme {
   --color-surface-container-lowest: #0b0f10;
@@ -50,6 +50,9 @@
   --color-inverse-surface: #e0e3e5;
   --color-secondary-fixed: #eddcff;
   --color-error: #ffb4ab;
+  --font-family-sans: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  --font-family-mono: 'Geist Mono', monospace;
+  --font-family-headline: 'Sora', sans-serif;
 }
 
 * {
@@ -59,9 +62,8 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--color-surface-container-lowest, #0b0f10);
-  color: var(--color-on-surface, #e0e3e5);
-  font-family: 'Hanken Grotesk', system-ui, -apple-system, sans-serif;
+  background: var(--color-surface-container-lowest);
+  color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
 }
 
