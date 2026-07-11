@@ -159,7 +159,7 @@ export function RulerCarousel({
   }, [isResetting]);
 
   // Calculate target position - center the active item
-  const centerPosition = 5; // We want item 5 (index 4) to be centered initially
+  const centerPosition = itemsPerSet / 2;
   const targetX = -500 + (centerPosition - (activeIndex % itemsPerSet)) * 500;
 
   // Get current page info
