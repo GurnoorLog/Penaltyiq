@@ -13,6 +13,12 @@ import {
   Asterisk,
   Home,
   History,
+  BrainCircuit,
+  Target,
+  BarChart3,
+  Swords,
+  TrendingUp,
+  GitCompare,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -22,13 +28,14 @@ interface SidebarProps {
 }
 
 const navItems = [
-  { label: "New Chat", shortcut: "⌘N", icon: Plus },
-  { label: "New Projects", shortcut: "⌘P", icon: FolderKanban },
-  { label: "Search", shortcut: "⌘K", icon: Search },
-  { label: "Models", shortcut: null, icon: Bot },
+  { label: "AI Coach", shortcut: "⌘C", icon: BrainCircuit },
+  { label: "Dashboard", shortcut: null, icon: Home },
+  { label: "Kick Analysis", shortcut: "⌘A", icon: BarChart3 },
+  { label: "Training", shortcut: "⌘T", icon: Swords },
+  { label: "Progress", shortcut: "⌘P", icon: TrendingUp },
+  { label: "Compare", shortcut: null, icon: GitCompare },
   { label: "History", shortcut: "⌘H", icon: History },
   { label: "Settings", shortcut: null, icon: Settings },
-  { label: "Dashboard", shortcut: null, icon: Home },
 ];
 
 export function Sidebar({ isOpen, onToggle, onAction }: SidebarProps) {
